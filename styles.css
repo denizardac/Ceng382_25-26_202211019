@@ -11,7 +11,6 @@ body {
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
-  /* Başlangıçta statik PNG arkaplan */
   background: url("images/background-static.png") center center no-repeat;
   background-size: cover;
 }
@@ -275,7 +274,74 @@ body {
   animation: containerAnim 6.3s forwards;
 }
 
-/* *** FORM GİZLEMEK İÇİN EKLEDİĞİMİZ .hidden SINIFI *** */
+/* *** FORM GİZLEMEK İÇİN EKLENEN .hidden SINIFI *** */
 .hidden {
   display: none !important;
+}
+
+/* *** TABLE SAYFASI STİLLERİ *** */
+.table-wrapper {
+  width: 90%;
+  max-width: 900px;
+  margin: 40px auto;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  min-height: calc(100vh - 80px); /* Ekran boyutunu doldurmak için */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  position: relative;
+  overflow: auto;
+}
+
+.table-title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #ff0000; /* Kırmızıya yakın bir ton */
+}
+
+.class-form {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.class-form input {
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background: #222;
+  color: #fff;
+}
+.class-form button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #ff0000;
+  color: #fff;
+  transition: transform 0.2s;
+}
+.class-form button:hover {
+  transform: scale(1.05);
+}
+
+#classTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #111;
+}
+
+#classTable th,
+#classTable td {
+  border: 1px solid #444;
+  padding: 10px;
+  text-align: left;
+  color: #fff;
+}
+
+#classTable th {
+  background: #222;
 }
