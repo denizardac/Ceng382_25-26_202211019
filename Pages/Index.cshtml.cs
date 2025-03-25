@@ -8,79 +8,78 @@ namespace MyRazorApp.Pages
 {
     public class IndexModel : PageModel
     {
-        // In-memory veritabanı gibi davranacak statik liste
-        public static List<ClassInformationModel> Classes { get; set; }
-            = new List<ClassInformationModel>();
+        // In-memory verilerin saklandığı static alan
+        private static List<ClassInformationModel> _storage = new List<ClassInformationModel>();
 
-        // Form verileri bu property'e bind edilecek
+        // Form verileri
         [BindProperty]
         public ClassInformationModel NewClass { get; set; } = new ClassInformationModel();
 
+        // Tabloda göstereceğimiz veriler
+        public List<ClassInformationModel> Classes { get; set; } = new List<ClassInformationModel>();
+
         public void OnGet()
         {
-            // Sayfa yüklendiğinde tabloya Classes listesini yansıtır.
+            // Sayfa yüklendiğinde tabloya _storage içeriğini ver
+            Classes = _storage;
         }
 
-        // Ekleme veya Güncelleme (Add / Update)
         public IActionResult OnPostAdd()
         {
-            // ModelState geçerli değilse formu tekrar göster
             if (!ModelState.IsValid)
             {
+                // Validasyon hataları varsa tabloyu tekrar doldur
+                Classes = _storage;
                 return Page();
             }
 
-            // Eğer Edit modundan geliyorsak ve listede bu Id varsa önce eski kaydı silelim
-            var existing = Classes.FirstOrDefault(c => c.Id == NewClass.Id);
+            // Eğer Edit modundan geliyorsak, bu Id'ye sahip kaydı sil
+            var existing = _storage.FirstOrDefault(c => c.Id == NewClass.Id);
             if (existing != null)
             {
-                Classes.Remove(existing);
+                // Yani update yapıyoruz
+                _storage.Remove(existing);
+            }
+            else
+            {
+                // Gerçekten yeni bir kayıt ekleniyor
+                NewClass.Id = ClassInformationModel.GetNextId();
             }
 
-            // Ardından yeni veya güncellenmiş nesneyi ekle
-            Classes.Add(NewClass);
+            _storage.Add(NewClass);
 
             // Formu temizle
             NewClass = new ClassInformationModel();
-
-            // Sayfayı yenile
             return RedirectToPage();
         }
 
-        // Silme (Delete)
         public IActionResult OnPostDelete(int id)
         {
-            var classToDelete = Classes.FirstOrDefault(c => c.Id == id);
-            if (classToDelete != null)
+            var toDelete = _storage.FirstOrDefault(c => c.Id == id);
+            if (toDelete != null)
             {
-                Classes.Remove(classToDelete);
+                _storage.Remove(toDelete);
             }
-
-            // İşlemden sonra sayfayı yenile
             return RedirectToPage();
         }
 
-        // Düzenleme (Edit)
         public IActionResult OnPostEdit(int id)
         {
-            var classToEdit = Classes.FirstOrDefault(c => c.Id == id);
-            if (classToEdit != null)
+            var toEdit = _storage.FirstOrDefault(c => c.Id == id);
+            if (toEdit != null)
             {
-                // Yeni bir nesne oluştururken constructor auto-increment yapar,
-                // bu yüzden varolan Id'yi korumak için elle atıyoruz.
-                NewClass = new ClassInformationModel
-                {
-                    Id = classToEdit.Id,
-                    ClassName = classToEdit.ClassName,
-                    StudentCount = classToEdit.StudentCount,
-                    Description = classToEdit.Description
-                };
+                // Var olan ID'yi koruyoruz (update için).
+                NewClass.Id = toEdit.Id;
+                NewClass.ClassName = toEdit.ClassName;
+                NewClass.StudentCount = toEdit.StudentCount;
+                NewClass.Description = toEdit.Description;
 
-                // Liste içinden bu öğeyi geçici olarak kaldır
-                Classes.Remove(classToEdit);
+                // Liste dışına alıyoruz ki OnPostAdd()'te "update" yapabilsin
+                _storage.Remove(toEdit);
             }
 
-            // Form doldurulmuş şekilde sayfayı göster
+            // Tabloda verileri görebilmek için
+            Classes = _storage;
             return Page();
         }
     }

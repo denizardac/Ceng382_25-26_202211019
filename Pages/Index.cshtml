@@ -4,89 +4,202 @@
     ViewData["Title"] = "Week 5 - Class Management";
 }
 
-<!-- Bootstrap CSS (Dotnet new webapp ile gelen site.css de var ama Bootstrap eklemek istersen: -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - MyRazorApp</title>
 
-<div class="container mt-4">
-    <div class="row">
-        <!-- Soldaki sütun: Form -->
-        <div class="col-md-6">
-            <h3>Add / Edit Class</h3>
-            <form method="post" class="card p-3">
-                <div class="form-group">
-                    <label asp-for="NewClass.ClassName" class="font-weight-bold"></label>
-                    <input asp-for="NewClass.ClassName" class="form-control" placeholder="Enter class name" />
-                    <span asp-validation-for="NewClass.ClassName" class="text-danger"></span>
-                </div>
+    <!-- Bootstrap CSS -->
+    <link
+        rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
 
-                <div class="form-group">
-                    <label asp-for="NewClass.StudentCount" class="font-weight-bold"></label>
-                    <input asp-for="NewClass.StudentCount" class="form-control" placeholder="Enter student count" />
-                    <span asp-validation-for="NewClass.StudentCount" class="text-danger"></span>
-                </div>
+    <style>
+        /* Ana gövdeye hafif bir gradient arka plan vermek istersen */
+        body {
+            background: linear-gradient(120deg, #d9ecf2, #f2ffff);
+        }
 
-                <div class="form-group">
-                    <label asp-for="NewClass.Description" class="font-weight-bold"></label>
-                    <textarea asp-for="NewClass.Description" class="form-control" placeholder="Enter description"></textarea>
-                    <span asp-validation-for="NewClass.Description" class="text-danger"></span>
-                </div>
+        /* Card başlıkları için custom renk (teal) */
+        .bg-teal {
+            background-color: #20c997; /* bootstrap'te "teal" benzeri */
+        }
 
-                <button type="submit" asp-page-handler="Add" class="btn btn-primary">
-                    Add / Update
-                </button>
-            </form>
+        /* Footer en alt kısma sabitlenmesi için:
+           1) body ve html %100 yükseklikte
+           2) .min-vh-100 + .mt-auto vb. ayarlar */
+        html, body {
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+        <div class="container">
+            <a class="navbar-brand" href="#">MyRazorApp</a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarResponsive"
+                aria-controls="navbarResponsive"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Menü öğeleri -->
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Privacy</a>
+                    </li>
+                    <!-- Başka sayfalar, linkler vs. ekleyebilirsin -->
+                </ul>
+            </div>
         </div>
+    </nav>
 
-        <!-- Sağdaki sütun: Tablo -->
-        <div class="col-md-6">
-            <h3>Class List</h3>
-            <table class="table table-bordered table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Class Name</th>
-                        <th>Student Count</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Classes)
-                    {
-                        <tr>
-                            <td>@item.Id</td>
-                            <td>@item.ClassName</td>
-                            <td>@item.StudentCount</td>
-                            <td>@item.Description</td>
-                            <td>
-                                <!-- Delete -->
-                                <form method="post" style="display:inline;">
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <button type="submit" asp-page-handler="Delete"
-                                            class="btn btn-danger btn-sm">
-                                        Delete
-                                    </button>
-                                </form>
+    <!-- İçerik -->
+    <main class="container my-4 flex-grow-1">
+        <div class="row">
+            <!-- SOL KISIM: Form -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow border-0 rounded">
+                    <!-- Card Header -->
+                    <div class="card-header bg-teal text-white">
+                        <h4 class="mb-0">Add / Edit Class</h4>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="form-group">
+                                <label asp-for="NewClass.ClassName" class="font-weight-bold"></label>
+                                <input
+                                    asp-for="NewClass.ClassName"
+                                    class="form-control"
+                                    placeholder="Enter class name"
+                                />
+                                <span asp-validation-for="NewClass.ClassName" class="text-danger"></span>
+                            </div>
 
-                                <!-- Edit -->
-                                <form method="post" style="display:inline;">
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <button type="submit" asp-page-handler="Edit"
-                                            class="btn btn-secondary btn-sm">
-                                        Edit
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                            <div class="form-group">
+                                <label asp-for="NewClass.StudentCount" class="font-weight-bold"></label>
+                                <input
+                                    asp-for="NewClass.StudentCount"
+                                    class="form-control"
+                                    placeholder="Enter student count"
+                                />
+                                <span asp-validation-for="NewClass.StudentCount" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="NewClass.Description" class="font-weight-bold"></label>
+                                <textarea
+                                    asp-for="NewClass.Description"
+                                    class="form-control"
+                                    placeholder="Enter description"
+                                ></textarea>
+                                <span asp-validation-for="NewClass.Description" class="text-danger"></span>
+                            </div>
+
+                            <button type="submit" asp-page-handler="Add" class="btn btn-success w-100">
+                                Add / Update
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SAĞ KISIM: Tablo -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow border-0 rounded">
+                    <!-- Card Header -->
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0">Class List</h4>
+                    </div>
+                    <!-- Card Body -->
+                    <div class="card-body p-0">
+                        <table class="table table-striped table-hover mb-0">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th style="width: 50px;">Id</th>
+                                    <th>Class Name</th>
+                                    <th>Student Count</th>
+                                    <th>Description</th>
+                                    <th style="width: 150px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Classes)
+                                {
+                                    <tr>
+                                        <td>@item.Id</td>
+                                        <td>@item.ClassName</td>
+                                        <td>@item.StudentCount</td>
+                                        <td>@item.Description</td>
+                                        <td>
+                                            <!-- Delete -->
+                                            <form method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button
+                                                    type="submit"
+                                                    asp-page-handler="Delete"
+                                                    class="btn btn-danger btn-sm"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </form>
+                                            <!-- Edit -->
+                                            <form method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button
+                                                    type="submit"
+                                                    asp-page-handler="Edit"
+                                                    class="btn btn-secondary btn-sm"
+                                                >
+                                                    Edit
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    </main>
 
-@section Scripts {
-    <!-- "No JavaScript" kuralı varsa tamamen kaldırabilirsiniz.
-         Bu partial, client-side validation için JS ekler. -->
-    <partial name="_ValidationScriptsPartial" />
-}
+    <!-- Footer (Sayfanın en altında duracak şekilde ayarlandı) -->
+    <footer class="bg-dark text-white py-3 mt-auto">
+        <div class="container text-center">
+            <small>&copy; 2025 - MyRazorApp | All rights reserved.</small>
+        </div>
+    </footer>
+
+    @section Scripts {
+        <!-- "No JavaScript" kuralı katı ise, bu scriptleri kaldır -->
+        <partial name="_ValidationScriptsPartial" />
+        <!-- Bootstrap'ın responsive navbar işlevi için gerekli JS. 
+             No JavaScript isteniyorsa bunları da kaldırman lazım. -->
+        <script
+            src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-LtrjvnR4Twt/qOuYx9nDGLFUP6WnOapP7XTs6ueOW+0etIAz4fRe9fB7PHLHp8bG"
+            crossorigin="anonymous"
+        ></script>
+    }
+</body>
+</html>
