@@ -1,10 +1,92 @@
 ﻿@page
-@model IndexModel
+@model MyRazorApp.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Week 5 - Class Management";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Bootstrap CSS (Dotnet new webapp ile gelen site.css de var ama Bootstrap eklemek istersen: -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Soldaki sütun: Form -->
+        <div class="col-md-6">
+            <h3>Add / Edit Class</h3>
+            <form method="post" class="card p-3">
+                <div class="form-group">
+                    <label asp-for="NewClass.ClassName" class="font-weight-bold"></label>
+                    <input asp-for="NewClass.ClassName" class="form-control" placeholder="Enter class name" />
+                    <span asp-validation-for="NewClass.ClassName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NewClass.StudentCount" class="font-weight-bold"></label>
+                    <input asp-for="NewClass.StudentCount" class="form-control" placeholder="Enter student count" />
+                    <span asp-validation-for="NewClass.StudentCount" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NewClass.Description" class="font-weight-bold"></label>
+                    <textarea asp-for="NewClass.Description" class="form-control" placeholder="Enter description"></textarea>
+                    <span asp-validation-for="NewClass.Description" class="text-danger"></span>
+                </div>
+
+                <button type="submit" asp-page-handler="Add" class="btn btn-primary">
+                    Add / Update
+                </button>
+            </form>
+        </div>
+
+        <!-- Sağdaki sütun: Tablo -->
+        <div class="col-md-6">
+            <h3>Class List</h3>
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Class Name</th>
+                        <th>Student Count</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Classes)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.ClassName</td>
+                            <td>@item.StudentCount</td>
+                            <td>@item.Description</td>
+                            <td>
+                                <!-- Delete -->
+                                <form method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" asp-page-handler="Delete"
+                                            class="btn btn-danger btn-sm">
+                                        Delete
+                                    </button>
+                                </form>
+
+                                <!-- Edit -->
+                                <form method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" asp-page-handler="Edit"
+                                            class="btn btn-secondary btn-sm">
+                                        Edit
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <!-- "No JavaScript" kuralı varsa tamamen kaldırabilirsiniz.
+         Bu partial, client-side validation için JS ekler. -->
+    <partial name="_ValidationScriptsPartial" />
+}
