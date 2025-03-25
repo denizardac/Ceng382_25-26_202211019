@@ -9,7 +9,6 @@
 <head>
     <meta charset="utf-8" />
     <title>@ViewData["Title"] - MyRazorApp</title>
-
     <!-- Bootstrap CSS -->
     <link
         rel="stylesheet"
@@ -17,66 +16,44 @@
     />
 
     <style>
-        /* Ana gövdeye hafif bir gradient arka plan vermek istersen */
+        /* İsteğe bağlı hafif gradient arka plan */
         body {
             background: linear-gradient(120deg, #d9ecf2, #f2ffff);
         }
-
-        /* Card başlıkları için custom renk (teal) */
+        /* Card başlık rengi (teal benzeri) */
         .bg-teal {
-            background-color: #20c997; /* bootstrap'te "teal" benzeri */
+            background-color: #20c997;
         }
-
-        /* Footer en alt kısma sabitlenmesi için:
-           1) body ve html %100 yükseklikte
-           2) .min-vh-100 + .mt-auto vb. ayarlar */
+        /* Yükseklik ayarı, footer'ı alta itmek için */
         html, body {
             height: 100%;
+        }
+        .min-vh-100 {
+            min-height: 100vh;
         }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+    <!-- Navbar (statik, hiçbir JS olmadan basit görüntü) -->
+    <nav class="navbar navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">MyRazorApp</a>
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarResponsive"
-                aria-controls="navbarResponsive"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- Menü öğeleri -->
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Privacy</a>
-                    </li>
-                    <!-- Başka sayfalar, linkler vs. ekleyebilirsin -->
-                </ul>
+            <span class="navbar-brand mb-0 h1">MyRazorApp</span>
+            <div>
+                <a class="text-white mr-3" href="Index">Home</a>
+                <a class="text-white" href="#">Privacy</a>
             </div>
         </div>
     </nav>
 
-    <!-- İçerik -->
+    <!-- Ana içerik -->
     <main class="container my-4 flex-grow-1">
         <div class="row">
-            <!-- SOL KISIM: Form -->
+            <!-- SOL: Form -->
             <div class="col-md-6 mb-4">
                 <div class="card shadow border-0 rounded">
-                    <!-- Card Header -->
                     <div class="card-header bg-teal text-white">
                         <h4 class="mb-0">Add / Edit Class</h4>
                     </div>
-                    <!-- Card Body -->
                     <div class="card-body">
                         <form method="post">
                             <div class="form-group">
@@ -84,8 +61,7 @@
                                 <input
                                     asp-for="NewClass.ClassName"
                                     class="form-control"
-                                    placeholder="Enter class name"
-                                />
+                                    placeholder="Enter class name" />
                                 <span asp-validation-for="NewClass.ClassName" class="text-danger"></span>
                             </div>
 
@@ -94,8 +70,7 @@
                                 <input
                                     asp-for="NewClass.StudentCount"
                                     class="form-control"
-                                    placeholder="Enter student count"
-                                />
+                                    placeholder="Enter student count" />
                                 <span asp-validation-for="NewClass.StudentCount" class="text-danger"></span>
                             </div>
 
@@ -104,8 +79,7 @@
                                 <textarea
                                     asp-for="NewClass.Description"
                                     class="form-control"
-                                    placeholder="Enter description"
-                                ></textarea>
+                                    placeholder="Enter description"></textarea>
                                 <span asp-validation-for="NewClass.Description" class="text-danger"></span>
                             </div>
 
@@ -117,14 +91,12 @@
                 </div>
             </div>
 
-            <!-- SAĞ KISIM: Tablo -->
+            <!-- SAĞ: Tablo -->
             <div class="col-md-6 mb-4">
                 <div class="card shadow border-0 rounded">
-                    <!-- Card Header -->
                     <div class="card-header bg-dark text-white">
                         <h4 class="mb-0">Class List</h4>
                     </div>
-                    <!-- Card Body -->
                     <div class="card-body p-0">
                         <table class="table table-striped table-hover mb-0">
                             <thead class="thead-dark">
@@ -178,28 +150,16 @@
         </div>
     </main>
 
-    <!-- Footer (Sayfanın en altında duracak şekilde ayarlandı) -->
+    <!-- Footer (no JS, sabit değil ama sayfa içeriğine göre alta iner) -->
     <footer class="bg-dark text-white py-3 mt-auto">
         <div class="container text-center">
             <small>&copy; 2025 - MyRazorApp | All rights reserved.</small>
         </div>
     </footer>
 
-    @section Scripts {
-        <!-- "No JavaScript" kuralı katı ise, bu scriptleri kaldır -->
-        <partial name="_ValidationScriptsPartial" />
-        <!-- Bootstrap'ın responsive navbar işlevi için gerekli JS. 
-             No JavaScript isteniyorsa bunları da kaldırman lazım. -->
-        <script
-            src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-            crossorigin="anonymous"
-        ></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-LtrjvnR4Twt/qOuYx9nDGLFUP6WnOapP7XTs6ueOW+0etIAz4fRe9fB7PHLHp8bG"
-            crossorigin="anonymous"
-        ></script>
-    }
+    <!-- No JavaScript: Partial Validation Scripts KALDIRILDI.
+         Yani tamamen server-side validation kullanıyoruz.
+         Kaldırmak için bu satırı da yok ediyoruz: -->
+    @* <partial name="_ValidationScriptsPartial" /> *@
 </body>
 </html>

@@ -33,19 +33,19 @@ namespace MyRazorApp.Pages
                 return Page();
             }
 
-            // Eğer Edit modundan geliyorsak, bu Id'ye sahip kaydı sil
+            // Edit modundan gelmişse varolan kaydı sil (Id aynıysa update)
             var existing = _storage.FirstOrDefault(c => c.Id == NewClass.Id);
             if (existing != null)
             {
-                // Yani update yapıyoruz
                 _storage.Remove(existing);
             }
             else
             {
-                // Gerçekten yeni bir kayıt ekleniyor
+                // Yepyeni bir kayıt ekleniyorsa
                 NewClass.Id = ClassInformationModel.GetNextId();
             }
 
+            // Listeye ekle
             _storage.Add(NewClass);
 
             // Formu temizle
@@ -68,13 +68,13 @@ namespace MyRazorApp.Pages
             var toEdit = _storage.FirstOrDefault(c => c.Id == id);
             if (toEdit != null)
             {
-                // Var olan ID'yi koruyoruz (update için).
+                // Var olan ID'yi koru (update için)
                 NewClass.Id = toEdit.Id;
                 NewClass.ClassName = toEdit.ClassName;
                 NewClass.StudentCount = toEdit.StudentCount;
                 NewClass.Description = toEdit.Description;
 
-                // Liste dışına alıyoruz ki OnPostAdd()'te "update" yapabilsin
+                // Güncellenecek öğeyi geçici olarak listeden çıkar
                 _storage.Remove(toEdit);
             }
 

@@ -7,10 +7,9 @@ namespace MyRazorApp.Models
         // static sayaç, her yeni kayıt eklendiğinde artacak
         private static int _nextId = 1;
 
-        // Artık constructor'da _nextId++ YOK!
         public ClassInformationModel()
         {
-            // Boş constructor
+            // Constructor boş. ID, OnPostAdd()'de verilecek.
         }
 
         public int Id { get; set; }
@@ -23,7 +22,7 @@ namespace MyRazorApp.Models
 
         public string Description { get; set; } = string.Empty;
 
-        // Her yeni eklemede ID atayacak yardımcı metot
+        // Yeni kayıt eklenirken ID atamak için çağrılacak yardımcı metot
         public static int GetNextId()
         {
             return _nextId++;
