@@ -1,0 +1,14 @@
+﻿/* Navbar marka ve linkler */
+a.navbar-brand { white-space: normal; word-break: break-all; }
+.navbar-light .navbar-nav .nav-link { color: #333; font-weight: 500; }
+.navbar-light .navbar-nav .nav-link:hover { color: #0077cc; }
+
+/* Footer */
+.footer { position: absolute; bottom: 0; width: 100%; line-height: 60px; }
+
+/* Gölge yardımcı sınıf */
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0,0,0,.05); }
+
+/* Tabloda vurgulu kolon */
+.highlight-col { background-color: #ffc107 !important; }
+.table thead th.highlight-col { background-color: #ffeb99 !important; }

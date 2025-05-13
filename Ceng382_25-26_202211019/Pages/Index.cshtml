@@ -1,0 +1,248 @@
+﻿@page
+@model MyRazorApp.Pages.IndexModel
+@{
+    ViewData["Title"] = "Class Management - Week 8";
+}
+
+<h2 style="color:#703e62">Class List with Filter, Pagination & JSON Export</h2>
+
+<!-- Filter & PageSize -->
+<form method="get" asp-page="/Index">
+  <div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="Filter" style="color:#703e62">Filter by Class Name:</label>
+      <input type="text" id="Filter" name="Filter"
+             value="@Model.Filter" class="form-control"
+             placeholder="Enter class name" />
+    </div>
+    <div class="form-group col-md-2">
+      <label for="PageSize" style="color:#703e62">Rows/Page:</label>
+      <select id="PageSize" name="PageSize" class="form-control"
+              onchange="this.form.submit()">
+        @foreach (var size in new[]{5,10,20,50})
+        {
+          <option value="@size" selected="@(Model.PageSize==size)">
+            @size
+          </option>
+        }
+      </select>
+    </div>
+    <div class="form-group col-md-2 align-self-end">
+      <button type="submit" class="btn btn-danger">Filter</button>
+      <a asp-page="/Index"
+         asp-route-PageSize="@Model.PageSize"
+         class="btn btn-secondary">
+        Clear
+      </a>
+    </div>
+  </div>
+</form>
+
+<!-- Column Selection -->
+<div class="mb-2">
+  <p style="color:#703e62; font-weight:bold; margin-bottom:0.5rem;">
+    Select Columns:
+  </p>
+  <button type="button" class="btn btn-sm btn-outline-primary"
+          onclick="selectAllColumns()">Select All</button>
+  <button type="button" class="btn btn-sm btn-outline-secondary"
+          onclick="deselectAllColumns()">Deselect All</button>
+
+  @foreach (var col in new[]{ "ClassName", "StudentCount", "Description" })
+  {
+    var cbId = $"col_{col}";
+    <div class="form-check form-check-inline ml-2">
+      <input class="form-check-input"
+             type="checkbox"
+             id="@cbId"
+             name="SelectedColumns"
+             value="@col"
+             onclick="toggleColumnHighlight('@col')"
+             @(Model.SelectedColumns.Contains(col) ? "checked" : "") />
+      <label class="form-check-label" for="@cbId">@col</label>
+    </div>
+  }
+</div>
+
+<!-- Export Buttons -->
+<div class="mb-3">
+  <form method="post" asp-page-handler="ExportAll" style="display:inline">
+    <input type="hidden" name="Page"     value="@Model.Page" />
+    <input type="hidden" name="PageSize" value="@Model.PageSize" />
+    <input type="hidden" name="Filter"   value="@Model.Filter" />
+    @foreach (var col in Model.SelectedColumns)
+    {
+      <input type="hidden" name="SelectedColumns" value="@col" />
+    }
+    <button type="submit" class="btn btn-success">Export All</button>
+  </form>
+  <form method="post" asp-page-handler="ExportFiltered"
+        style="display:inline;margin-left:8px">
+    <input type="hidden" name="Page"     value="@Model.Page" />
+    <input type="hidden" name="PageSize" value="@Model.PageSize" />
+    <input type="hidden" name="Filter"   value="@Model.Filter" />
+    @foreach (var col in Model.SelectedColumns)
+    {
+      <input type="hidden" name="SelectedColumns" value="@col" />
+    }
+    <button type="submit" class="btn btn-success">Export Filtered</button>
+  </form>
+</div>
+
+<!-- Data Table -->
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th data-colname="ClassName" style="color:#703e62">Class Name</th>
+      <th data-colname="StudentCount" style="color:#703e62">Student Count</th>
+      <th data-colname="Description" style="color:#703e62">Description</th>
+      <th style="color:#703e62">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in Model.FilteredClasses)
+    {
+      <tr>
+        <td data-colname="ClassName">@item.ClassName</td>
+        <td data-colname="StudentCount">@item.StudentCount</td>
+        <td data-colname="Description">@item.Description</td>
+        <td>
+          <form method="post" asp-page-handler="Edit" style="display:inline">
+            <input type="hidden" name="id" value="@item.Id" />
+            <input type="hidden" name="Page"     value="@Model.Page" />
+            <input type="hidden" name="PageSize" value="@Model.PageSize" />
+            <input type="hidden" name="Filter"   value="@Model.Filter" />
+            <button type="submit" class="btn btn-warning btn-sm">Edit</button>
+          </form>
+          <form method="post" asp-page-handler="Delete"
+                style="display:inline;margin-left:5px">
+            <input type="hidden" name="id" value="@item.Id" />
+            <input type="hidden" name="Page"     value="@Model.Page" />
+            <input type="hidden" name="PageSize" value="@Model.PageSize" />
+            <input type="hidden" name="Filter"   value="@Model.Filter" />
+            <button type="submit" class="btn btn-dark btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<!-- Pagination -->
+@if (Model.TotalPages > 1)
+{
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      @* Previous *@
+      @if (Model.Page > 1)
+      {
+        <li class="page-item">
+          <a class="page-link"
+             asp-page="/Index"
+             asp-route-page="@(Model.Page - 1)"
+             asp-route-pagesize="@Model.PageSize"
+             asp-route-filter="@Model.Filter">
+            Previous
+          </a>
+        </li>
+      }
+      else
+      {
+        <li class="page-item disabled">
+          <span class="page-link">Previous</span>
+        </li>
+      }
+
+      @* Page Numbers *@
+      @for (var i = 1; i <= Model.TotalPages; i++)
+      {
+        if (i == Model.Page)
+        {
+          <li class="page-item active">
+            <span class="page-link">@i</span>
+          </li>
+        }
+        else
+        {
+          <li class="page-item">
+            <a class="page-link"
+               asp-page="/Index"
+               asp-route-page="@i"
+               asp-route-pagesize="@Model.PageSize"
+               asp-route-filter="@Model.Filter">
+              @i
+            </a>
+          </li>
+        }
+      }
+
+      @* Next *@
+      @if (Model.Page < Model.TotalPages)
+      {
+        <li class="page-item">
+          <a class="page-link"
+             asp-page="/Index"
+             asp-route-page="@(Model.Page + 1)"
+             asp-route-pagesize="@Model.PageSize"
+             asp-route-filter="@Model.Filter">
+            Next
+          </a>
+        </li>
+      }
+      else
+      {
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+      }
+    </ul>
+  </nav>
+}
+
+<!-- Add/Edit Form -->
+<h3 style="color:#703e62">
+  @((Model.NewClass.Id == 0) ? "Add New Class" : "Edit Class")
+</h3>
+<form method="post" asp-page-handler="Add">
+  <input type="hidden" name="Page"     value="@Model.Page" />
+  <input type="hidden" name="PageSize" value="@Model.PageSize" />
+  <input type="hidden" name="Filter"   value="@Model.Filter" />
+
+  <div class="form-group">
+    <label asp-for="NewClass.ClassName" style="color:#703e62"></label>
+    <input asp-for="NewClass.ClassName" class="form-control" />
+    <span asp-validation-for="NewClass.ClassName" class="text-danger"></span>
+  </div>
+  <div class="form-group">
+    <label asp-for="NewClass.StudentCount" style="color:#703e62"></label>
+    <input asp-for="NewClass.StudentCount" class="form-control" />
+    <span asp-validation-for="NewClass.StudentCount" class="text-danger"></span>
+  </div>
+  <div class="form-group">
+    <label asp-for="NewClass.Description" style="color:#703e62"></label>
+    <textarea asp-for="NewClass.Description" class="form-control"></textarea>
+    <span asp-validation-for="NewClass.Description" class="text-danger"></span>
+  </div>
+  <button type="submit" class="btn btn-primary">
+    @((Model.NewClass.Id == 0) ? "Add" : "Update")
+  </button>
+</form>
+
+@section Scripts {
+  <script>
+    function toggleColumnHighlight(colName) {
+      document.querySelectorAll(`[data-colname="${colName}"]`)
+              .forEach(c => c.classList.toggle('highlight-col'));
+    }
+    function selectAllColumns() {
+      document.querySelectorAll('input[name="SelectedColumns"]').forEach(ch => {
+        if (!ch.checked) { ch.checked = true; toggleColumnHighlight(ch.value); }
+      });
+    }
+    function deselectAllColumns() {
+      document.querySelectorAll('input[name="SelectedColumns"]').forEach(ch => {
+        if (ch.checked) { ch.checked = false; toggleColumnHighlight(ch.value); }
+      });
+    }
+  </script>
+}
